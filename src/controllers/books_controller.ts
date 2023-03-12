@@ -8,16 +8,20 @@ export const getBooks = async (req: Request, res: Response) => {
 
 export const getBook = async (req: Request, res: Response) => {
 	const bookId = req.params.bookId;
-	const book = await bookService.getBook(Number(bookId));
+	if (!isNaN(+bookId)) {
+		const book = await bookService.getBook(Number(bookId));
 
-	if (book) {
-		res.json(book).status(200);
+		if (book) {
+			res.json(book).status(200);
+		} else {
+			const books = await bookService.getBooks();
+			res.status(404).json({
+				message: `Book with bookId #${bookId} is not existing.`,
+				books,
+			});
+		}
 	} else {
-		const books = await bookService.getBooks();
-		res.status(404).json({
-			message: `Book with bookId #${bookId} is not existing.`,
-			books,
-		});
+		res.status(400).json("bookId must be a number.");
 	}
 };
 
@@ -32,9 +36,13 @@ export const saveBook = async (req: Request, res: Response) => {
 };
 
 export const deleteBook = async (req: Request, res: Response) => {
-	const bookId = +req.params.bookId;
-	const message = await bookService.deleteBook(bookId);
-	res.status(200).json(message);
+	const bookId = req.params.bookId;
+	if (!isNaN(+bookId)) {
+		const message = await bookService.deleteBook(+bookId);
+		res.status(200).json(message);
+	} else {
+		res.status(400).json("bookId must be a number.");
+	}
 };
 
 // User Story 4 - Update Book By Id Solution

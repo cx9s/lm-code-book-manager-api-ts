@@ -105,6 +105,14 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 		// Assert
 		expect(res.body).toEqual(dummyBookData[1]);
 	});
+
+	test("status code 400 for a book with bookId that is not a number", async () => {
+		// Act
+		const res = await request(app).get("/api/v1/books/a");
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+	});
 });
 
 describe("POST /api/v1/books endpoint", () => {
@@ -176,5 +184,13 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 		// Assert
 		expect(res.statusCode).toEqual(200);
 		expect(res.body).toEqual(`Book #99 is not found.`);
+	});
+
+	test("status code 400 for a book with bookId that is not a number", async () => {
+		// Act
+		const res = await request(app).delete("/api/v1/books/a");
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
 	});
 });
