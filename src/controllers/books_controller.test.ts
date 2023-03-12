@@ -132,12 +132,29 @@ describe("POST /api/v1/books endpoint", () => {
 		// Assert
 		expect(res.statusCode).toEqual(400);
 	});
+
+	test("status code 400 for saving a book with bookId that is existed", async () => {
+		// Arrange - we can enforce throwing an exception by mocking the implementation
+		jest.spyOn(bookService, "saveBook").mockImplementation(() => {
+			throw new Error("Error saving book");
+		});
+
+		// Act
+		const res = await request(app)
+			.post("/api/v1/books")
+			.send({ bookId: 1, title: "Fantastic Mr. Fox", author: "Roald Dahl" }); // bookId is existed
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+	});
 });
 
 describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 	test("status code 200 and return correct message for a book that has been deleted", async () => {
 		// Arrange
-		jest.spyOn(bookService, "deleteBook").mockResolvedValue(1);
+		jest
+			.spyOn(bookService, "deleteBook")
+			.mockResolvedValue(`Book #1 has been deleted.`);
 
 		// Act
 		const res = await request(app).delete("/api/v1/books/1");
@@ -149,7 +166,9 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 
 	test("status code 200 and return correct message for a book that is not found", async () => {
 		// Arrange
-		jest.spyOn(bookService, "deleteBook").mockResolvedValue(0);
+		jest
+			.spyOn(bookService, "deleteBook")
+			.mockResolvedValue(`Book #99 is not found.`);
 
 		// Act
 		const res = await request(app).delete("/api/v1/books/99");

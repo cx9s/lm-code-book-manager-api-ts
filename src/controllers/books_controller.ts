@@ -29,13 +29,7 @@ export const saveBook = async (req: Request, res: Response) => {
 
 export const deleteBook = async (req: Request, res: Response) => {
 	const bookId = +req.params.bookId;
-
-	const deletedNumber = await bookService.deleteBook(bookId);
-	const message =
-		deletedNumber === 1
-			? `Book #${bookId} has been deleted.`
-			: `Book #${bookId} is not found.`;
-
+	const message = await bookService.deleteBook(bookId);
 	res.status(200).json(message);
 };
 

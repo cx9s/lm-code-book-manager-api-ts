@@ -11,13 +11,24 @@ export const getBook = async (bookId: number) => {
 };
 
 export const saveBook = async (book: Book) => {
-	return Book.create<Book>(book);
+	const [newbook, created] = await Book.findOrCreate<Book>({
+		where: { bookId: book.bookId },
+		defaults: { ...book },
+	});
+	if (created) return newbook;
+	else {
+		throw { message: "bookId is existed." } as Error;
+	}
 };
 
 export const deleteBook = async (bookId: number) => {
-	return Book.destroy({
+	const deletedNumber = await Book.destroy({
 		where: { bookId },
 	});
+
+	return deletedNumber === 1
+		? `Book #${bookId} has been deleted.`
+		: `Book #${bookId} is not found.`;
 };
 
 // User Story 4 - Update Book By Id Solution
