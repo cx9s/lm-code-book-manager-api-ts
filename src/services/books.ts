@@ -17,7 +17,7 @@ export const saveBook = async (book: Book) => {
 	});
 	if (created) return newbook;
 	else {
-		throw { message: "bookId is existed." } as Error;
+		throw { message: "bookId is existing." } as Error;
 	}
 };
 
